@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logisticiti Intelligence — Daily Freight &amp; Forwarding Briefing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1F33;
+    --paper:#F5F1E8;
+    --amber:#E8A33D;
+    --steel:#3E6485;
+    --rust:#B4452B;
+    --charcoal:#1B1B1B;
+    --line: rgba(11,31,51,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--charcoal);
+    font-family:'Source Serif 4', Georgia, serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ---- ticker ---- */
+  .ticker-wrap{
+    background:var(--amber);
+    color:var(--ink);
+    overflow:hidden;
+    white-space:nowrap;
+    border-bottom:1px solid var(--ink);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    letter-spacing:.03em;
+  }
+  .ticker{
+    display:inline-block;
+    padding:7px 0;
+    animation:scroll 38s linear infinite;
+  }
+  .ticker span{margin-right:48px;}
+  @keyframes scroll{
+    0%{transform:translateX(0);}
+    100%{transform:translateX(-50%);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker{animation:none;}
+  }
+
+  /* ---- header ---- */
+  header{
+    background:var(--ink);
+    color:var(--paper);
+    padding:40px 6vw 30px;
+    border-bottom:3px solid var(--amber);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:14px;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(32px,5vw,54px);
+    line-height:1.02;
+    margin:0 0 12px;
+    letter-spacing:-0.01em;
+  }
+  .tagline{
+    font-size:16px;
+    color:#C9D3DC;
+    max-width:640px;
+    margin:0 0 26px;
+    line-height:1.5;
+  }
+  .board{
+    display:flex;
+    flex-wrap:wrap;
+    gap:22px;
+    align-items:flex-end;
+    border-top:1px solid rgba(245,241,232,0.18);
+    padding-top:20px;
+  }
+  .board-item{font-family:'IBM Plex Mono',monospace;}
+  .board-label{
+    font-size:10px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:#8FA3B5;
+    margin-bottom:6px;
+  }
+  .flip{
+    display:inline-block;
+    background:#132C46;
+    color:var(--amber);
+    padding:6px 10px;
+    font-size:15px;
+    font-weight:600;
+    border-radius:2px;
+    letter-spacing:.04em;
+  }
+
+  /* ---- filters ---- */
+  .filters{
+    position:sticky; top:0; z-index:5;
+    background:var(--paper);
+    border-bottom:1px solid var(--line);
+    padding:16px 6vw;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .filter-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    padding:9px 16px;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .filter-btn:hover{background:rgba(11,31,51,0.06);}
+  .filter-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+  }
+
+  /* ---- feed ---- */
+  main{padding:36px 6vw 80px;}
+  .feed{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+    gap:22px;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:22px 22px 20px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(11,31,51,0.10);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:14px;
+  }
+  .code{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--steel);
+    letter-spacing:.05em;
+  }
+  .stamp{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    border:1.5px solid currentColor;
+    border-radius:20px;
+    padding:3px 10px;
+    transform:rotate(-3deg);
+  }
+  .stamp.market{color:var(--steel);}
+  .stamp.advisory{color:var(--rust);}
+  .stamp.opinion{color:#7A5C2E;}
+
+  .card h3{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:19px;
+    line-height:1.28;
+    margin:0 0 10px;
+    color:var(--ink);
+  }
+  .card p{
+    font-size:15px;
+    line-height:1.55;
+    color:#333;
+    margin:0 0 18px;
+    flex-grow:1;
+  }
+  .card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:#666;
+    border-top:1px dashed var(--line);
+    padding-top:12px;
+  }
+  .card-foot a{
+    color:var(--rust);
+    text-decoration:none;
+    font-weight:600;
+  }
+  .card-foot a:hover{text-decoration:underline;}
+
+  footer{
+    background:var(--ink);
+    color:#9FB0BF;
+    padding:34px 6vw;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  footer a{color:var(--amber); text-decoration:none;}
+
+  .empty{
+    font-family:'IBM Plex Mono',monospace;
+    color:#666;
+    padding:60px 0;
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker"></div>
+</div>
+
+<header>
+  <div class="eyebrow">Logisticiti · Freight Forwarding &amp; Air Cargo Intelligence</div>
+  <h1>Daily Manifest</h1>
+  <p class="tagline">Trending market moves, carrier &amp; press advisories, and expert analysis across freight forwarding, ocean and air cargo — pulled from primary sources and refreshed daily.</p>
+  <div class="board">
+    <div class="board-item">
+      <div class="board-label">Last Synced</div>
+      <div class="flip" id="synced">—</div>
+    </div>
+    <div class="board-item">
+      <div class="board-label">Entries Today</div>
+      <div class="flip" id="count">—</div>
+    </div>
+  </div>
+</header>
+
+<div class="filters" id="filters">
+  <button class="filter-btn active" data-cat="all">All</button>
+  <button class="filter-btn" data-cat="market">Market Pulse</button>
+  <button class="filter-btn" data-cat="advisory">Advisories &amp; Press</button>
+  <button class="filter-btn" data-cat="opinion">Analysis &amp; Opinion</button>
+</div>
+
+<main>
+  <div class="feed" id="feed"></div>
+</main>
+
+<footer>
+  <div>Logisticiti Intelligence — sourced &amp; summarized, never syndicated. Always verify against the original before citing.</div>
+  <div><a href="https://www.linkedin.com/company/logisticiti" target="_blank" rel="noopener">linkedin.com/company/logisticiti</a></div>
+</footer>
+
+<script>
+const CATEGORY_LABEL = { market:'Market', advisory:'Advisory', opinion:'Opinion' };
+
+const FALLBACK_DATA = {
+  "last_synced": "2026-08-16T09:00:00Z",
+  "items": [
+    {
+      "code": "MKT-041",
+      "category": "market",
+      "title": "Transpacific ocean rates ease off July's historic highs",
+      "summary": "Space to the U.S. West Coast has improved after carriers added deployments, though East and Gulf Coast capacity stays tight. Panama Canal restrictions and South China weather disruptions continue to weigh on cost and schedule reliability.",
+      "source": "J.M. Rodgers Co.",
+      "url": "https://www.jmrodgers.com/august-2026-freight-market-update/",
+      "date": "2026-08-09"
+    },
+    {
+      "code": "MKT-042",
+      "category": "market",
+      "title": "Taiwan and Korea air lanes stay squeezed by AI hardware demand",
+      "summary": "Semiconductor and AI-server exports are absorbing available transpacific air capacity, pushing DHL Global Forwarding to recommend booking Taiwan and Korea origin shipments two to three weeks ahead. South China routings currently offer more pricing stability.",
+      "source": "DHL Global Forwarding",
+      "url": "https://www.dhl.com/us-en/home/global-forwarding/latest-news-and-webinars/air-freight-market-update.html",
+      "date": "2026-08-01"
+    },
+    {
+      "code": "MKT-043",
+      "category": "market",
+      "title": "US container imports climb again in July",
+      "summary": "Descartes data shows U.S. container imports rose roughly 4.5% in July, with China-origin volumes hitting new highs as retailers front-load ahead of anticipated tariff increases.",
+      "source": "The Loadstar",
+      "url": "https://theloadstar.com/",
+      "date": "2026-08-11"
+    },
+    {
+      "code": "MKT-044",
+      "category": "market",
+      "title": "Typhoon Dolphin adds to East Asia port congestion",
+      "summary": "The storm's landfall near Ningbo has compounded existing congestion across East Asian ports, with knock-on effects expected for transpacific sailing schedules in the coming weeks.",
+      "source": "The Loadstar",
+      "url": "https://theloadstar.com/",
+      "date": "2026-08-12"
+    },
+    {
+      "code": "MKT-045",
+      "category": "market",
+      "title": "New US country-specific tariff regime takes effect",
+      "summary": "A revised tariff structure introduced July 24 applies duties of 10% and 12.5% across roughly 60 trading partners, reshaping routing and sourcing decisions for shippers and forwarders alike.",
+      "source": "DHL Global Forwarding",
+      "url": "https://www.dhl.com/us-en/home/global-forwarding/latest-news-and-webinars/air-freight-market-update.html",
+      "date": "2026-07-24"
+    },
+    {
+      "code": "ADV-012",
+      "category": "advisory",
+      "title": "FedEx divests supply chain services unit to CMA CGM",
+      "summary": "FedEx is selling its supply chain services division to CMA CGM, which plans to fold the business into its Ceva Logistics subsidiary — a signal of continued consolidation between ocean carriers and contract logistics providers.",
+      "source": "FreightWaves / American Shipper",
+      "url": "https://www.freightwaves.com/american-shipper",
+      "date": "2026-08-05"
+    },
+    {
+      "code": "ADV-013",
+      "category": "advisory",
+      "title": "DHL lifts 2026 guidance on logistics demand",
+      "summary": "DHL has raised its full-year 2026 guidance, citing resilient logistics demand and stronger-than-expected second-quarter results across its forwarding and supply chain units.",
+      "source": "FreightWaves / American Shipper",
+      "url": "https://www.freightwaves.com/american-shipper",
+      "date": "2026-08-06"
+    },
+    {
+      "code": "ADV-014",
+      "category": "advisory",
+      "title": "Yusen Logistics deploys AI-powered air freight platform with cargo.one",
+      "summary": "Yusen Logistics is rolling out cargo.one's AI-driven operating system to handle air freight sales and procurement, part of a broader forwarder push toward automated rate sourcing and booking.",
+      "source": "The Loadstar",
+      "url": "https://theloadstar.com/",
+      "date": "2026-08-12"
+    },
+    {
+      "code": "OPN-027",
+      "category": "opinion",
+      "title": "Forwarders move from AI pilots to production",
+      "summary": "Major players including CH Robinson and Kuehne+Nagel are moving AI agents out of pilot phase and into live operations, with industry commentary framing this as the biggest structural shift in forwarding workflows in years — though fragmented legacy systems remain a drag on adoption.",
+      "source": "The Loadstar",
+      "url": "https://theloadstar.com/",
+      "date": "2026-08-12"
+    },
+    {
+      "code": "OPN-028",
+      "category": "opinion",
+      "title": "C.H. Robinson: air and ocean markets are decoupling by region",
+      "summary": "C.H. Robinson's August outlook describes air freight demand as increasingly localized — AI-related exports lifting select Asian origins while Europe softens — even as ocean freight sees broadly easing demand and improving space on several lanes.",
+      "source": "C.H. Robinson",
+      "url": "https://www.chrobinson.com/en-us/resources/insights-and-advisories/north-america-freight-insights/aug-2026-freight-market-update/",
+      "date": "2026-08-10"
+    }
+  ]
+};
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US',{month:'short', day:'2-digit', year:'numeric'});
+}
+
+function render(data){
+  document.getElementById('synced').textContent =
+    new Date(data.last_synced).toLocaleString('en-US',{month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+  document.getElementById('count').textContent = String(data.items.length).padStart(2,'0');
+
+  // ticker
+  const ticker = document.getElementById('ticker');
+  const headlines = data.items.map(i => `<span>◆ [${i.code}] ${i.title}</span>`);
+  ticker.innerHTML = headlines.join('') + headlines.join(''); // duplicate for seamless loop
+
+  const feed = document.getElementById('feed');
+
+  function draw(cat){
+    const items = cat === 'all' ? data.items : data.items.filter(i => i.category === cat);
+    if(!items.length){
+      feed.innerHTML = '<div class="empty">No entries in this category yet.</div>';
+      return;
+    }
+    feed.innerHTML = items.map(i => `
+      <article class="card">
+        <div class="card-top">
+          <span class="code">${i.code}</span>
+          <span class="stamp ${i.category}">${CATEGORY_LABEL[i.category] || i.category}</span>
+        </div>
+        <h3>${i.title}</h3>
+        <p>${i.summary}</p>
+        <div class="card-foot">
+          <span>${i.source} · ${fmtDate(i.date)}</span>
+          <a href="${i.url}" target="_blank" rel="noopener">Source →</a>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  draw('all');
+
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      draw(btn.dataset.cat);
+    });
+  });
+}
+
+fetch('data.json', {cache:'no-store'})
+  .then(r => { if(!r.ok) throw new Error('no data.json'); return r.json(); })
+  .then(render)
+  .catch(() => render(FALLBACK_DATA));
+</script>
+
+</body>
+</html>
